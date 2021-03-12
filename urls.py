@@ -21,7 +21,7 @@ not_ams_activities = [
     newAmsActInfo("道聚城", not_know_start_time, not_know_end_time),
     newAmsActInfo("黑钻礼包", not_know_start_time, not_know_end_time),
     newAmsActInfo("腾讯游戏信用礼包", not_know_start_time, not_know_end_time),
-    newAmsActInfo("管家蚊子腿", "2021-02-01 00:00:00", "2021-03-01 23:59:59"),
+    newAmsActInfo("管家蚊子腿", "2021-03-05 00:00:00", "2021-03-25 23:59:59"),
     newAmsActInfo("qq视频蚊子腿", "2021-02-01 00:00:00", "2021-03-01 23:59:59"),
     newAmsActInfo("会员关怀", "2021-02-01 00:00:00", not_know_end_time),
     newAmsActInfo("集卡", "2021-01-15 00:00:00", "2021-02-28 23:59:59"),
@@ -106,7 +106,7 @@ class Urls:
         self.iActivityId_xinyue_cat = "141920"  # 心悦猫咪
         self.iActivityId_xinyue_weekly_gift = "155525"  # 心悦app周礼包
         self.iActivityId_dnf_drift = "348890"  # dnf漂流瓶
-        self.iActivityId_majieluo = "354870"  # DNF马杰洛的规划第三期
+        self.iActivityId_majieluo = "363901"  # DNF马杰洛的规划
         self.iActivityId_dnf_helper = "356203"  # DNF助手活动 牛气冲天迎新年
         self.iActivityId_warm_winter = "347445"  # 暖冬有礼
         self.iActivityId_youfei = "350668"  # qq视频-看江湖有翡
@@ -197,6 +197,10 @@ class Urls:
             if not attr_name.startswith("iActivityId_"):
                 continue
 
+            # 部分电脑上可能会在这一步卡住，因此加一个标志项，允许不启用活动
+            if os.path.exists("不查询活动.txt"):
+                continue
+
             act = search_act(act_id)
             if act is None:
                 continue
@@ -255,7 +259,7 @@ def get_act_desc_js(actId):
     for idx in range(len(actUrls)):
         url = actUrls[idx].format(actId=actId, last_three=str(actId[-3:]))
 
-        res = requests.get(url, timeout=10)
+        res = requests.get(url, timeout=1)
         if res.status_code != 200:
             continue
 

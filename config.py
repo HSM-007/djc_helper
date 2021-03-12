@@ -219,7 +219,7 @@ class FunctionSwitchesConfig(ConfigInterface):
         self.get_xinyue_weekly_gift = True
         # 是否领取dnf漂流瓶
         self.get_dnf_drift = True
-        # 是否领取DNF马杰洛的规划第三期
+        # 是否领取DNF马杰洛的规划
         self.get_majieluo = True
         # 是否领取dnf助手活动，额外需要助手userId和token
         self.get_dnf_helper = True
@@ -440,6 +440,8 @@ class CommonConfig(ConfigInterface):
         self._show_usage = False
         # 是否强制使用打包附带的便携版chrome
         self.force_use_portable_chrome = False
+        # 强制使用特定大版本的chrome，默认为0，表示使用小助手默认设定的版本。
+        self.force_use_chrome_major_version = 0
         # http(s)请求超时时间(秒)
         self.http_timeout = 10
         # 是否展示chrome的debug日志，如DevTools listening，Bluetooth等

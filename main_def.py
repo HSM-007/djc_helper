@@ -360,6 +360,7 @@ def count_with_color(card_count, show_color, show_width=3):
 def show_accounts_status(cfg, ctx):
     logger.info("")
     _show_head_line("部分活动信息")
+    logger.warning("如果一直卡在这一步，请在小助手目录下创建一个空文件：不查询活动.txt")
     Urls().show_current_valid_act_infos()
 
     logger.info("")
@@ -371,8 +372,8 @@ def show_accounts_status(cfg, ctx):
         return
     _show_head_line(ctx)
 
-    heads = ["序号", "账号名", "启用状态", "聚豆余额", "聚豆历史总数", "成就点", "心悦组队", "心悦G分", "编年史", "年史碎片"]
-    colSizes = [4, 12, 8, 8, 12, 6, 8, 8, 14, 8]
+    heads = ["序号", "账号名", "启用状态", "聚豆余额", "聚豆历史总数", "成就点", "心悦组队", "心悦G分", "编年史", "年史碎片", "守护者卡片", "马杰洛石头"]
+    colSizes = [4, 12, 8, 8, 12, 6, 8, 8, 14, 8, 10, 10]
 
     logger.info(tableify(heads, colSizes))
     for _idx, account_config in enumerate(cfg.account_configs):
@@ -408,7 +409,11 @@ def show_accounts_status(cfg, ctx):
             levelInfo = ""
             chronicle_points = ""
 
-        cols = [idx, account_config.name, status, djc_balance, djc_allin, xinyue_info.score, team_score, gpoints, levelInfo, chronicle_points]
+        majieluo_cards = djcHelper.query_majieluo_card_info()
+
+        stone_count = djcHelper.query_stone_count()
+
+        cols = [idx, account_config.name, status, djc_balance, djc_allin, xinyue_info.score, team_score, gpoints, levelInfo, chronicle_points, majieluo_cards, stone_count]
         logger.info(color("fg_bold_green") + tableify(cols, colSizes, need_truncate=True))
 
 
@@ -634,16 +639,16 @@ def show_ask_message_box_only_once():
 def show_ask_message_box_only_once_sync():
     return
     # 临时加一个请求帮忙弄下白嫖活动的逻辑
-    if is_first_run("赛利亚卡牌"):
+    if is_first_run("守护者卡牌"):
         message = (
-            "马杰洛活动中的赛利亚卡牌，有小伙伴有多余的Q版赛利亚卡牌吗（第5个）？\n"
+            "马杰洛活动中的守护者卡牌，有小伙伴有多余的守护者卡牌吗（第5个）？\n"
             "如果有多的话，可以不可以送我一张哇0-0\n"
             "\n"
             "点 确定 打开赠送页面进行赠送，点 取消 拒绝-。-\n"
         )
         res = win32api.MessageBox(0, message, "求送卡", win32con.MB_OKCANCEL)
         if res == win32con.IDOK:
-            webbrowser.open("https://dnf.qq.com/cp/a20210121welfare/index.html?askforId=11820&askforUin=1054073896")
+            webbrowser.open("https://dnf.qq.com/cp/a20210311welfare/index.html?askforId=11820&askforUin=1054073896")
             win32api.MessageBox(0, "打开网页后登陆后点击[确认]按钮赠送就好啦~多谢啦，嘿嘿嘿0-0", "致谢", win32con.MB_ICONINFORMATION)
         else:
             win32api.MessageBox(0, "嘤嘤嘤", "TAT", win32con.MB_ICONINFORMATION)
@@ -655,6 +660,9 @@ def temp_code(cfg):
     _show_head_line("一些小提示")
 
     tips = [
+        (
+            "如需下载chrome、autojs、HttpCanary、notepad++、vscode、bandizip等小工具，可前往网盘自助下载：https://fzls.lanzous.com/s/djc-tools"
+        ),
         (
             "现已添加简易版配置工具，大家可以双击【DNF蚊子腿小助手配置工具.exe】进行体验~"
         ),
@@ -872,12 +880,12 @@ def _test_main():
         check_djc_role_binding()
 
     # note: 用于本地测试main的相关逻辑
-    # show_accounts_status(cfg, "启动时展示账号概览")
+    show_accounts_status(cfg, "启动时展示账号概览")
     # try_join_xinyue_team(cfg)
     # run(cfg)
     # try_take_xinyue_team_award(cfg)
     # try_xinyue_sailiyam_start_work(cfg)
-    show_lottery_status("运行完毕展示各账号抽卡卡片以及各礼包剩余可领取信息", cfg, need_show_tips=True)
+    # show_lottery_status("运行完毕展示各账号抽卡卡片以及各礼包剩余可领取信息", cfg, need_show_tips=True)
     # auto_send_cards(cfg)
     # show_lottery_status("卡片赠送完毕后展示各账号抽卡卡片以及各礼包剩余可领取信息", cfg)
     # show_accounts_status(cfg, "运行完毕展示账号概览")

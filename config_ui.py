@@ -399,6 +399,7 @@ class ConfigUi(QFrame):
     def add_group(self, checked=False):
         # note: 如果群满了，到 https://qun.qq.com/join.html 获取新群的加群链接 @2021-02-13 01:41:03 By Chen Ji
         webbrowser.open("https://qm.qq.com/cgi-bin/qm/qr?k=dKS0MF1YTajyj-UURScD3PWbk-B_6-x7&jump_from=webapi")
+        self.popen("DNF蚊子腿小助手交流群群二维码.jpg")
 
     def add_account(self, checked=False):
         account_name, ok = QInputDialog.getText(self, "添加账号", "要添加的账号名称", QLineEdit.Normal, "")
@@ -599,6 +600,9 @@ class CommonConfigUi(QFrame):
         self.checkbox_force_use_portable_chrome = create_checkbox(cfg.force_use_portable_chrome)
         form_layout.addRow("强制使用便携版chrome", self.checkbox_force_use_portable_chrome)
 
+        self.spinbox_force_use_chrome_major_version = create_spin_box(cfg.force_use_chrome_major_version)
+        form_layout.addRow("强制使用特定大版本的chrome（0表示默认版本）", self.spinbox_force_use_chrome_major_version)
+
         self.checkbox_run_in_headless_mode = create_checkbox(cfg.run_in_headless_mode)
         form_layout.addRow("自动登录模式不显示浏览器界面", self.checkbox_run_in_headless_mode)
 
@@ -638,6 +642,7 @@ class CommonConfigUi(QFrame):
 
     def update_config(self, cfg: CommonConfig):
         cfg.force_use_portable_chrome = self.checkbox_force_use_portable_chrome.isChecked()
+        cfg.force_use_chrome_major_version = self.spinbox_force_use_chrome_major_version.value()
         cfg.run_in_headless_mode = self.checkbox_run_in_headless_mode.isChecked()
         cfg.check_update_on_start = self.checkbox_check_update_on_start.isChecked()
         cfg.auto_update_on_start = self.checkbox_auto_update_on_start.isChecked()
@@ -969,8 +974,8 @@ class FunctionSwitchesConfigUi(QWidget):
         # self.checkbox_get_qq_video = create_checkbox(cfg.get_qq_video)
         # form_layout.addRow("qq视频活动", self.checkbox_get_qq_video)
 
-        # self.checkbox_get_dnf_helper_chronicle = create_checkbox(cfg.get_dnf_helper_chronicle)
-        # form_layout.addRow("dnf助手编年史（需配置助手userId）", self.checkbox_get_dnf_helper_chronicle)
+        self.checkbox_get_dnf_helper_chronicle = create_checkbox(cfg.get_dnf_helper_chronicle)
+        form_layout.addRow("dnf助手编年史（需配置助手userId）", self.checkbox_get_dnf_helper_chronicle)
         #
         # self.checkbox_get_dnf_helper = create_checkbox(cfg.get_dnf_helper)
         # form_layout.addRow("dnf助手活动（需配置助手userId和token）", self.checkbox_get_dnf_helper)
@@ -990,8 +995,8 @@ class FunctionSwitchesConfigUi(QWidget):
         self.checkbox_get_xinyue_weekly_gift = create_checkbox(cfg.get_xinyue_weekly_gift)
         form_layout.addRow("心悦app周礼包", self.checkbox_get_xinyue_weekly_gift)
 
-        # self.checkbox_get_majieluo = create_checkbox(cfg.get_majieluo)
-        # form_layout.addRow("DNF马杰洛的规划第三期", self.checkbox_get_majieluo)
+        self.checkbox_get_majieluo = create_checkbox(cfg.get_majieluo)
+        form_layout.addRow("DNF马杰洛的规划", self.checkbox_get_majieluo)
 
         self.checkbox_get_dnf_bbs_signin = create_checkbox(cfg.get_dnf_bbs_signin)
         form_layout.addRow("dnf论坛签到", self.checkbox_get_dnf_bbs_signin)
@@ -1011,11 +1016,11 @@ class FunctionSwitchesConfigUi(QWidget):
         self.checkbox_get_vip_mentor = create_checkbox(cfg.get_vip_mentor)
         form_layout.addRow("会员关怀", self.checkbox_get_vip_mentor)
 
-        # # ----------------------------------------------------------
-        # add_form_seperator(form_layout, "安全管家pskey")
-        #
-        # self.checkbox_get_guanjia = create_checkbox(cfg.get_guanjia)
-        # form_layout.addRow("管家蚊子腿", self.checkbox_get_guanjia)
+        # ----------------------------------------------------------
+        add_form_seperator(form_layout, "安全管家pskey")
+
+        self.checkbox_get_guanjia = create_checkbox(cfg.get_guanjia)
+        form_layout.addRow("管家蚊子腿", self.checkbox_get_guanjia)
 
     def update_config(self, cfg: FunctionSwitchesConfig):
         cfg.disable_most_activities = self.checkbox_disable_most_activities.isChecked()
@@ -1027,14 +1032,14 @@ class FunctionSwitchesConfigUi(QWidget):
         cfg.get_heizuan_gift = self.checkbox_get_heizuan_gift.isChecked()
         # cfg.get_dnf_shanguang = self.checkbox_get_dnf_shanguang.isChecked()
         # cfg.get_qq_video = self.checkbox_get_qq_video.isChecked()
-        # cfg.get_dnf_helper_chronicle = self.checkbox_get_dnf_helper_chronicle.isChecked()
+        cfg.get_dnf_helper_chronicle = self.checkbox_get_dnf_helper_chronicle.isChecked()
         # cfg.get_dnf_helper = self.checkbox_get_dnf_helper.isChecked()
         # cfg.get_hello_voice = self.checkbox_get_hello_voice.isChecked()
         cfg.get_dnf_welfare = self.checkbox_get_dnf_welfare.isChecked()
         cfg.get_xinyue_financing = self.checkbox_get_xinyue_financing.isChecked()
         cfg.get_xinyue_cat = self.checkbox_get_xinyue_cat.isChecked()
         cfg.get_xinyue_weekly_gift = self.checkbox_get_xinyue_weekly_gift.isChecked()
-        # cfg.get_majieluo = self.checkbox_get_majieluo.isChecked()
+        cfg.get_majieluo = self.checkbox_get_majieluo.isChecked()
         cfg.get_dnf_bbs_signin = self.checkbox_get_dnf_bbs_signin.isChecked()
         # cfg.get_wegame_spring = self.checkbox_get_wegame_spring.isChecked()
         # cfg.get_spring_collection = self.checkbox_get_spring_collection.isChecked()
@@ -1042,7 +1047,7 @@ class FunctionSwitchesConfigUi(QWidget):
         # cfg.get_ark_lottery = self.checkbox_get_ark_lottery.isChecked()
         cfg.get_vip_mentor = self.checkbox_get_vip_mentor.isChecked()
 
-        # cfg.get_guanjia = self.checkbox_get_guanjia.isChecked()
+        cfg.get_guanjia = self.checkbox_get_guanjia.isChecked()
 
 
 class MobileGameRoleInfoConfigUi(QWidget):
@@ -1148,7 +1153,7 @@ class DnfHelperInfoConfigUi(QWidget):
         self.lineedit_nickName = create_lineedit(cfg.nickName, "dnf助手->我的->编辑->昵称")
         form_layout.addRow("昵称", self.lineedit_nickName)
 
-        self.lineedit_token = create_lineedit(cfg.token, "形如 sSfsEtDH , 可通过助手分享出的活动链接或抓包得到的活动链接中找到token参数")
+        self.lineedit_token = create_lineedit(cfg.token, "形如 sSfsEtDH，抓包或分享链接可得（ps：不知道咋操作，就到群里大喊一句：助手token，就会有好心的机器人来为你指路")
         form_layout.addRow("登陆票据", self.lineedit_token)
 
         self.checkbox_chronicle_lottery = create_checkbox(cfg.chronicle_lottery)
